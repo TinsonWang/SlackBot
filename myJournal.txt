@@ -1,0 +1,5 @@
+January 17
+> created file: "bot.py"
+> created file: ".env"
+> installed module: "slackclient"
+> installed module: "python-dotenv"
