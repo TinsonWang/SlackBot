@@ -3,3 +3,4 @@ January 17
 > created file: ".env"
 > installed module: "slackclient"
 > installed module: "python-dotenv"
+> set up github repo
