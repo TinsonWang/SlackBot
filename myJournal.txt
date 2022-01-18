@@ -4,3 +4,9 @@ January 17
 > installed module: "slackclient"
 > installed module: "python-dotenv"
 > set up github repo
+> installed software to help set up local web server: ngrok
+> installed module: flask
+> installed module: slackeventsapi
+> tried to set up event handling, failed due to an issue with the handler not firing?
+>> potential issue with handler or event detection?
+> resolved previous issue with event handling: bot was not added to the channel, therefore could not listen for events!
