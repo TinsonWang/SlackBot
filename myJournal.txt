@@ -10,3 +10,8 @@ January 17
 > tried to set up event handling, failed due to an issue with the handler not firing?
 >> potential issue with handler or event detection?
 > resolved previous issue with event handling: bot was not added to the channel, therefore could not listen for events!
+
+January 18
+> Added slash command '/message-count': Returns the user's current number of messages sent to the channel
+> Set up endpoint for /message-count
+> Added logic to temporarily store number of messages a user has sent 
