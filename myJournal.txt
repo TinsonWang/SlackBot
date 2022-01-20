@@ -21,3 +21,9 @@ January 19
 > !tasktest prints a differently formatted (using Markdown) automated message with an altered icon and name
 > Formatted a text file of jokes and responses (Referenced from: https://github.com/wesbos/dad-jokes)
 > Ran into a synchronous issue: Sometimes the response to the joke gets sent before the joke?
+
+January 20
+> Obtained API key for OpenWeather
+> installed module: requests
+> !weather now makes an OpenWeather API call and returns basic weather information
+> This command currently uses Ontario as a default, more interactivity should be implemented that allows the user to specify a specific location or a specific date (within reason)

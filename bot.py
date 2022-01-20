@@ -9,6 +9,8 @@ from slackeventsapi import SlackEventAdapter
 from pathlib import Path
 from re import search
 import random
+import requests
+import json
 
 # Set up environment
 env_path = Path('.') / '.env'
@@ -24,7 +26,8 @@ slack_event_adapter = SlackEventAdapter(os.environ['SIGNING_SECRET'], "/slack/ev
 client = WebClient(token=os.environ['SLACK_TOKEN'])
 BOT_ID = client.api_call("auth.test")['user_id']
 
-client.chat_postMessage(channel="#general", text="TinsonBot reporting for duty!")
+## Why does this send twice?
+# client.chat_postMessage(channel="#general", text="TinsonBot reporting for duty!")
 
 # Store message counts for all users in a dictionary -- This should be moved into an SQL database
 message_counts = {}
@@ -33,7 +36,6 @@ welcome_messages = {}
 # Referenced from: https://github.com/wesbos/dad-jokes
 bad_jokes_fp = open("badjokes.txt")
 bad_jokes = bad_jokes_fp.readlines()
-
 
 class WelcomeMessage:
     START_TEXT = {
@@ -114,8 +116,24 @@ def message(payload):
 
         # client.chat_postMessage(channel=channel_id, text=text + " (ECHO)")
 
+        # Currently returns weather information for Ontario -- add more interactivity later by allowing user to specify location
         if search("!weather", text):
-            client.chat_postMessage(channel=channel_id, text="Placeholder message for weather information")
+            lat = "34.063343"
+            lon = "-117.650887"
+            weather_url = "https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&appid=%s&units=metric" % (lat, lon, os.environ['WEATHER_TOKEN'])
+            weather_response = requests.get(weather_url)
+            data = json.loads(weather_response.text)
+            weather_data = data['main']
+            weather_current = data['weather'][0]['main']
+            weather_current_desc = data['weather'][0]['description']
+            weather_temperature = weather_data['temp']
+            weather_feels_like = weather_data['feels_like']
+            weather_humidity = weather_data['humidity']
+            new_line = '\n'
+            weather_message = f'Currently: {weather_current} -- {weather_current_desc} {new_line} Temperature: {weather_temperature}°C {new_line} Feels Like: {weather_feels_like}°C {new_line} Humidity: {weather_humidity}% {new_line} {new_line} Data provided by OpenWeather API'
+            client.chat_postMessage(channel=channel_id, text=f'{weather_message}', icon_emoji=":sunny:", username="Weather Report")
+
+            # client.chat_postMessage(channel=channel_id, text="Placeholder message for weather information")
 
         if search("!joke", text):
 
