@@ -14,4 +14,10 @@ January 17
 January 18
 > Added slash command '/message-count': Returns the user's current number of messages sent to the channel
 > Set up endpoint for /message-count
-> Added logic to temporarily store number of messages a user has sent 
+> Added logic to temporarily store number of messages a user has sent
+
+January 19
+> Added some text command placeholders: !weather, !joke, !messagecount, !help, !tasktest
+> !tasktest prints a differently formatted (using Markdown) automated message with an altered icon and name
+> Formatted a text file of jokes and responses (Referenced from: https://github.com/wesbos/dad-jokes)
+> Ran into a synchronous issue: Sometimes the response to the joke gets sent before the joke?
