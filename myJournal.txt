@@ -27,3 +27,8 @@ January 20
 > installed module: requests
 > !weather now makes an OpenWeather API call and returns basic weather information
 > This command currently uses Ontario as a default, more interactivity should be implemented that allows the user to specify a specific location or a specific date (within reason)
+
+January 21
+> Added event handler for event: reaction added
+> !tasktest now updates message when the user reacts
+> Added basic exception handling for non-text based messages

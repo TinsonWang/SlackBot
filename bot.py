@@ -104,7 +104,12 @@ def message(payload):
     channel_id = event.get('channel')
     user_id = event.get('user')
     text = event.get('text')
-    text = text.lower()
+    try:
+        text = text.lower()
+    except AttributeError:
+        pass
+
+
 
     if user_id != None and BOT_ID != user_id:
 
@@ -170,6 +175,21 @@ def message(payload):
             ## Direct DM
             # send_welcome_message(f'@{user_id}', user_id)
 
+# Handler for reaction added event
+@slack_event_adapter.on("reaction_added")
+def reaction(payload):
+    event = payload.get('event', {})
+    channel_id = event.get('item', {}).get('channel')
+    user_id = event.get('user')
+
+    if channel_id not in welcome_messages:
+        return
+
+    welcome = welcome_messages[channel_id][user_id]
+    welcome.completed = True
+    message = welcome.get_message()
+    updated_message = client.chat_update(**message)
+    welcome.timestamp = updated_message['ts']
 
 # Handler for error event
 @slack_event_adapter.on("error")
