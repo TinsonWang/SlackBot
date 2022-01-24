@@ -1,8 +1,4 @@
-# SlackBot
-
-4900/4910 Independent Study Proposal
----
-Tinson Wang
+# SlackBot - 4900/4910 Independent Study Proposal
 
 Proposed Work
 ---
@@ -17,11 +13,13 @@ At a high-level, this independent study will create a Slack app for Gryph Slack 
 -	Leverage machine learning into some features
 
 Personal Learning Outcomes
+---
 1.	I want to explore webhooks and REST APIs to create something meaningful. 
 2.	I want to learn and practice effective techniques for user experience design
 3.	I want to learn techniques for parsing user input and be able to identify the best response
 
 Milestones
+---
 Milestone 1 (Learning Outcome 1): A demonstration and code review of the webhooks and REST APIs used to date. This milestone will focus on examining and evaluating how the student incorporated RESTful services and webhooks into the bot.  
 Milestone 2 (Learning Outcome 2): Provide a report that evaluates and describes the different kind of user experience design techniques that were used. This milestone will focus on comparing and reflecting the different techniques the student tried and how those worked for their project.
 Milestone 3 (Learning Outcome 3): Demonstrate the capabilities of the most effective technique for parsing user input. The demonstration should include some quantitative measure (performance times, accuracy, user satisfaction, precision, recall) to identify which technique is most effective. 
