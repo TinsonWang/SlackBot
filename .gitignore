@@ -9,3 +9,4 @@ myJournal.txt
 /src/badjokes.txt
 __pycache__
 /src/__pycache_
+.vscode
