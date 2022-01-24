@@ -1,23 +1,5 @@
 from google_trans_new import LANGUAGES
 
-async def languages_top(message):
-
-    languages = "'cht' : 'chinese (traditional)'\n" \
-                "'chs' : 'chinese (simplified)'\n" \
-                "'fil' : 'filipino'\n" \
-                "'fr' : 'french'\n" \
-                "'de' : 'german'\n" \
-                "'ja' : 'japanese'\n" \
-                "'ko' : 'korean'\n" \
-                "'pt' : 'portugese'\n" \
-                "'es' : 'spanish'\n" \
-                "'vi' : 'vietnamese'"
-
-    await message.channel.send("Here's a list of the most frequently used languages:\n\n"
-                               +languages
-                               +'\n\nFor a full list of languages available, use !lang_all')
-    return
-
 def translate_message(bot, channel, text):
     # Extracts the 'destination code' from the command
     src = text[1:3]

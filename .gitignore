@@ -7,3 +7,5 @@ badjokes.md
 myJournal.txt
 /src/.env
 /src/badjokes.txt
+__pycache__
+/src/__pycache_
