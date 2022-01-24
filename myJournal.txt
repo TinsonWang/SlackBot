@@ -32,3 +32,10 @@ January 21
 > Added event handler for event: reaction added
 > !tasktest now updates message when the user reacts
 > Added basic exception handling for non-text based messages
+
+January 24
+> Refactored code: split up previously-monolithic code into separate files
+> Some bug fixing as a result of the refactoring
+> installed module: google_trans_new
+> Added new command using regex: ![a-zA-z][a-zA-z]to[a-zA-z][a-zA-z]
+> New command translates the message specified by the user
