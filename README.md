@@ -1,9 +1,11 @@
 # SlackBot
 
 4900/4910 Independent Study Proposal
-Tinson Wang, 0983887
+---
+Tinson Wang
 
 Proposed Work
+---
 At a high-level, this independent study will create a Slack app for Gryph Slack that behaves like a bucket bot. The Slack app will be interactive and respond to certain commands or prompts given by users. To start, the project will involve eliciting the users of Gryph Slack for use cases and aim to implement the given use cases. One goal is to be able to build a knowledge base and answer questions using that knowledge base (ex. a FAQ engine). Additionally, the Slack app will include functionality from the following list: 
 -	Casual levels of conversation (jokes, facts, weather information)
 -	Simple text adventure
