@@ -20,7 +20,7 @@ Personal Learning Outcomes
 
 Milestones
 ---
-Milestone 1 (Learning Outcome 1): A demonstration and code review of the webhooks and REST APIs used to date. This milestone will focus on examining and evaluating how the student incorporated RESTful services and webhooks into the bot.  
-Milestone 2 (Learning Outcome 2): Provide a report that evaluates and describes the different kind of user experience design techniques that were used. This milestone will focus on comparing and reflecting the different techniques the student tried and how those worked for their project.
-Milestone 3 (Learning Outcome 3): Demonstrate the capabilities of the most effective technique for parsing user input. The demonstration should include some quantitative measure (performance times, accuracy, user satisfaction, precision, recall) to identify which technique is most effective. 
-Milestone 4: Final report, includes student reflections and full documentation of the bot.
+- Milestone 1 (Learning Outcome 1): A demonstration and code review of the webhooks and REST APIs used to date. This milestone will focus on examining and evaluating how the student incorporated RESTful services and webhooks into the bot.  
+- Milestone 2 (Learning Outcome 2): Provide a report that evaluates and describes the different kind of user experience design techniques that were used. This milestone will focus on comparing and reflecting the different techniques the student tried and how those worked for their project.
+- Milestone 3 (Learning Outcome 3): Demonstrate the capabilities of the most effective technique for parsing user input. The demonstration should include some quantitative measure (performance times, accuracy, user satisfaction, precision, recall) to identify which technique is most effective. 
+- Milestone 4: Final report, includes student reflections and full documentation of the bot.
