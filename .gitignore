@@ -10,3 +10,11 @@ myJournal.txt
 __pycache__
 /src/__pycache_
 .vscode
+src/functions/.vs/functions/v17/.suo
+src/functions/.vs/functions/project-colors.json
+src/functions/.vs/VSWorkspaceState.json
+src/functions/.vs/slnx.sqlite
+.vs/CIS4900/v17/.suo
+.vs/CIS4900/project-colors.json
+.vs/VSWorkspaceState.json
+.vs/slnx.sqlite

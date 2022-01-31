@@ -34,7 +34,7 @@ class TinsonBot(slack.WebClient):
         dotenv.load_dotenv(dotenv_path=env_path)
 
         # Referenced from: https://github.com/wesbos/dad-jokes
-        self.bad_jokes_fp = open( Path('./src') / "badjokes.txt")
+        self.bad_jokes_fp = open(Path('./src') / "badjokes.txt")
         self.bad_jokes = self.bad_jokes_fp.readlines()
 
         # Load in keys
