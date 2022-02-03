@@ -39,3 +39,17 @@ January 24
 > installed module: google_trans_new
 > Added new command using regex: ![a-zA-z][a-zA-z]to[a-zA-z][a-zA-z]
 > New command translates the message specified by the user
+
+January 30
+> Encountered an issue where my .env file disappeared
+> Spent some time restoring said file and retrieving lost tokens
+> Some initial set up for SQL
+
+February 2
+> Successfully connected to SQL database from Slack
+> Created a database for testing: testdatabase
+> Created a table for testing: Courses
+> Populated table with some example entries
+> Added two new commands: !readsql and !select
+> !readsql returns everything from the Courses table
+> !select returns the value under the "what" column from the Courses table given a course code

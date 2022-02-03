@@ -14,6 +14,7 @@ from slackeventsapi import SlackEventAdapter
 from pathlib import Path
 from re import search, match
 from google_trans_new import google_translator
+import mysql.connector
 
 from .task import *
 from .translate import *
@@ -41,6 +42,7 @@ class TinsonBot(slack.WebClient):
         self.token = os.environ['SLACK_TOKEN']
         self.signing = os.environ['SIGNING_SECRET']
         self.weather_key = os.environ['WEATHER_TOKEN']
+        self.slack = os.environ['SQL_TOKEN']
 
         # Initialize Slack client
         self.client = slack.WebClient(token=self.token)
@@ -51,6 +53,17 @@ class TinsonBot(slack.WebClient):
 
         # Set up event handler to send requests to Flask server endpoint using the signing secret
         self.slack_event_adapter = SlackEventAdapter(self.signing, "/slack/events", self.server)
+
+        # Establish connection to SQL Server
+        db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password=f"{self.slack}",
+            database="testdatabase"
+        )
+
+        self.cursor = db.cursor()
+
 
         # Handler for message sent event (When a message is sent, call this function)
         @self.slack_event_adapter.on("message")
@@ -97,24 +110,19 @@ class TinsonBot(slack.WebClient):
 
                 if search("!joke", text):
 
-                    ## ASYNC ISSUES?
-                    # random_int = random.randint(0, 286)
-                    # found_joke = False
+                    random_int = 1
+                    while random_int % 2 == 1:
+                        # self.client.chat_postMessage(channel=channel_id, text=f'TESTING RANDOM INT {random_int}')
+                        random_int = random.randint(0, 286)
 
-                    # while found_joke != False:
-                    #     if search("**Q:**", bad_jokes[random_int]) != None and random_int % 2 == 0:
-                    #         found_joke = True
-                    #     else:
-                    #         random_int = random.randint(0, 286)
+                    # self.client.chat_postMessage(channel=channel_id, text=f'EXITED LOOP: RANDOM INT {random_int}')
+                    joke = self.bad_jokes[random_int]
+                    answer = self.bad_jokes[random_int+1]
 
-                    # joke = bad_jokes[random_int]
-                    # answer = bad_jokes[random_int+1]
-                    # new_line = '\n\n'
+                    self.client.chat_postMessage(channel=channel_id, text=f'{joke}')
+                    self.client.chat_postMessage(channel=channel_id, text=f'{answer}')
 
-                    # client.chat_postMessage(channel=channel_id, text=f'{joke}')
-                    # client.chat_postMessage(channel=channel_id, text=f'{answer}')
-
-                    self.client.chat_postMessage(channel=channel_id, text="Insert some joke here from some pool?")
+                    # self.client.chat_postMessage(channel=channel_id, text="Insert some joke here from some pool?")
 
                 if search("!messagecount", text):
                     self.client.chat_postMessage(channel=channel_id, text="Temporary Message")
@@ -131,6 +139,18 @@ class TinsonBot(slack.WebClient):
                     # self.client.chat_postMessage(channel=channel_id, text="Regex pattern found!")
                     translate_message(self, channel_id, text)
 
+                if search("!readsql", text):
+                    self.cursor.execute("SELECT * FROM Courses")
+                    for x in self.cursor:
+                        self.client.chat_postMessage(channel=channel_id, text=f"{x}")
+
+                if search("!select", text):
+                    selection = text[8:]
+                    selection = selection.upper()
+                    self.client.chat_postMessage(channel=channel_id, text=f"USER REQUESTING QUERY FOR: {selection}")
+                    self.cursor.execute(f"SELECT what FROM Courses WHERE courseID = '{selection}'")
+                    for x in self.cursor:
+                        self.client.chat_postMessage(channel=channel_id, text=f"{x}")
 
         # Handler for reaction added event
         @self.slack_event_adapter.on("reaction_added")
