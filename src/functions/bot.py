@@ -79,7 +79,6 @@ class TinsonBot(slack.WebClient):
             except AttributeError:
                 pass
 
-
             if user_id != None and self.BOT_ID != user_id:
                 # self.client.chat_postMessage(channel="#general", text="EVENT: Message detected!")
 
@@ -91,8 +90,8 @@ class TinsonBot(slack.WebClient):
 
                 # Currently returns weather information for Ontario -- add more interactivity later by allowing user to specify location
                 if search("!weather", text):
-                    lat = "34.063343"
-                    lon = "-117.650887"
+                    lat = "51.2538"
+                    lon = "85.3232"
                     weather_url = "https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&appid=%s&units=metric" % (lat, lon, os.environ['WEATHER_TOKEN'])
                     weather_response = requests.get(weather_url)
                     data = json.loads(weather_response.text)
@@ -119,8 +118,8 @@ class TinsonBot(slack.WebClient):
                     joke = self.bad_jokes[random_int]
                     answer = self.bad_jokes[random_int+1]
 
-                    self.client.chat_postMessage(channel=channel_id, text=f'{joke}')
-                    self.client.chat_postMessage(channel=channel_id, text=f'{answer}')
+                    self.client.chat_postMessage(channel=channel_id, text=f'{joke}', icon_emoji = ":thinking_face:", username="Question")
+                    self.client.chat_postMessage(channel=channel_id, text=f'{answer}', icon_emoji = ":joy:", username="Answer")
 
                     # self.client.chat_postMessage(channel=channel_id, text="Insert some joke here from some pool?")
 
@@ -128,7 +127,7 @@ class TinsonBot(slack.WebClient):
                     self.client.chat_postMessage(channel=channel_id, text="Temporary Message")
 
                 if search("!help", text):
-                    self.client.chat_postMessage(channel=channel_id, text="Did you ask me a question?")
+                    self.client.chat_postMessage(channel=channel_id, text="!help\n!weather\n!joke\n![a-z][a-z]to[a-z][a-z]\n!readsql\n!select\n!insert\n!delete\n!execute \n\n\nFor further help:\nSlack: Tinson Wang\nDiscord: Tinson#7360\nEmail: tinson@uoguelph.ca", icon_emoji=":question:", username="Available Commands")
 
                 # Direct DM
                 # send_welcome_message(f'@{user_id}', user_id)
@@ -143,14 +142,59 @@ class TinsonBot(slack.WebClient):
                     self.cursor.execute("SELECT * FROM Courses")
                     for x in self.cursor:
                         self.client.chat_postMessage(channel=channel_id, text=f"{x}")
+                        self.client.chat_postMessage(channel=channel_id, text="--------------------")
 
                 if search("!select", text):
                     selection = text[8:]
                     selection = selection.upper()
-                    self.client.chat_postMessage(channel=channel_id, text=f"USER REQUESTING QUERY FOR: {selection}")
-                    self.cursor.execute(f"SELECT what FROM Courses WHERE courseID = '{selection}'")
+                    # self.client.chat_postMessage(channel=channel_id, text=f"USER REQUESTING QUERY FOR: {selection}")
+                    successful_input = False
+                    self.cursor.execute(f"SELECT * FROM Courses WHERE courseID = '{selection}'")
                     for x in self.cursor:
                         self.client.chat_postMessage(channel=channel_id, text=f"{x}")
+                        successful_input = True
+
+                    if not successful_input:
+                        if search("CMySQLCursor", str(self.cursor)):
+                            self.client.chat_postMessage(channel=channel_id, text=f"Could not query input: '{selection}'")
+
+                if search("!insert", text):
+                    selection = text[8:]
+                    selection = selection.upper()
+
+                    try:
+                        self.cursor.execute(f"INSERT INTO Courses (courseID) VALUES (%s)", [f"{selection}"])
+                        db.commit()
+                        self.client.chat_postMessage(channel=channel_id, text=f"Added to table: '{selection}'")
+                    except:
+                        db.rollback()
+
+                if search("!delete", text):
+                    selection = text[8:]
+                    selection = selection.upper()
+
+                    try:
+                        self.cursor.execute(f"DELETE FROM Courses WHERE courseID = '{selection}'")
+                        db.commit()
+                        self.client.chat_postMessage(channel=channel_id, text=f"Deleted from table: '{selection}'")
+                    except:
+                        db.rollback()
+
+                if search("!execute", text):
+                    text = event.get('text')
+                    command = text[9:]
+
+                    try:
+                        self.cursor.execute(command)
+                        db.commit()
+                        self.client.chat_postMessage(channel=channel_id, text=f"Executed command: '{command}'")
+                    except:
+                        db.rollback()
+
+
+
+
+
 
         # Handler for reaction added event
         @self.slack_event_adapter.on("reaction_added")
@@ -192,7 +236,7 @@ class TinsonBot(slack.WebClient):
             return Response(), 200
 
         # Start bot
-        self.client.chat_postMessage(channel="#general", text="TinsonBot reporting for duty!")
+        # self.client.chat_postMessage(channel="#general", text="TinsonBot reporting for duty!")
         self.server.run()
 
 

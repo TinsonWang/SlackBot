@@ -53,3 +53,15 @@ February 2
 > Added two new commands: !readsql and !select
 > !readsql returns everything from the Courses table
 > !select returns the value under the "what" column from the Courses table given a course code
+
+February 4
+> Added logic for invalid !select commands
+> Added two new commands: !insert and !delete
+
+February 5
+> Added new command: !execute
+> Updated all SQL commands to catch errors
+> !readsql now separates lines a little better
+> !help now returns a list of all available commands
+> !weather now correctly returns weather for Ontario
+> Added new profile pictures and bot names for !joke and !help
