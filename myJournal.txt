@@ -65,3 +65,11 @@ February 5
 > !help now returns a list of all available commands
 > !weather now correctly returns weather for Ontario
 > Added new profile pictures and bot names for !joke and !help
+
+February 11
+> Fixed some port issue with local SQL server
+> Adapted many !commands to /commands:
+>> /help, /weather, /joke, /translate
+> Added some async-await logic to account for synchronous issues
+> Customized /translate command
+> /weather command is now interactive -- user can specify location via city, state

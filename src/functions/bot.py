@@ -3,6 +3,7 @@ from time import sleep
 from operator import contains
 import random
 import logging
+import asyncio
 
 import os
 import dotenv
@@ -88,56 +89,6 @@ class TinsonBot(slack.WebClient):
                 else:
                     self.message_counts[user_id] = 1
 
-                # Currently returns weather information for Ontario -- add more interactivity later by allowing user to specify location
-                if search("!weather", text):
-                    lat = "51.2538"
-                    lon = "85.3232"
-                    weather_url = "https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&appid=%s&units=metric" % (lat, lon, os.environ['WEATHER_TOKEN'])
-                    weather_response = requests.get(weather_url)
-                    data = json.loads(weather_response.text)
-                    weather_data = data['main']
-                    weather_current = data['weather'][0]['main']
-                    weather_current_desc = data['weather'][0]['description']
-                    weather_temperature = weather_data['temp']
-                    weather_feels_like = weather_data['feels_like']
-                    weather_humidity = weather_data['humidity']
-                    new_line = '\n'
-                    weather_message = f'Currently: {weather_current} -- {weather_current_desc} {new_line} Temperature: {weather_temperature}°C {new_line} Feels Like: {weather_feels_like}°C {new_line} Humidity: {weather_humidity}% {new_line} {new_line} Data provided by OpenWeather API'
-                    self.client.chat_postMessage(channel=channel_id, text=f'{weather_message}', icon_emoji=":sunny:", username="Weather Report")
-
-                    # client.chat_postMessage(channel=channel_id, text="Placeholder message for weather information")
-
-                if search("!joke", text):
-
-                    random_int = 1
-                    while random_int % 2 == 1:
-                        # self.client.chat_postMessage(channel=channel_id, text=f'TESTING RANDOM INT {random_int}')
-                        random_int = random.randint(0, 286)
-
-                    # self.client.chat_postMessage(channel=channel_id, text=f'EXITED LOOP: RANDOM INT {random_int}')
-                    joke = self.bad_jokes[random_int]
-                    answer = self.bad_jokes[random_int+1]
-
-                    self.client.chat_postMessage(channel=channel_id, text=f'{joke}', icon_emoji = ":thinking_face:", username="Question")
-                    self.client.chat_postMessage(channel=channel_id, text=f'{answer}', icon_emoji = ":joy:", username="Answer")
-
-                    # self.client.chat_postMessage(channel=channel_id, text="Insert some joke here from some pool?")
-
-                if search("!messagecount", text):
-                    self.client.chat_postMessage(channel=channel_id, text="Temporary Message")
-
-                if search("!help", text):
-                    self.client.chat_postMessage(channel=channel_id, text="!help\n!weather\n!joke\n![a-z][a-z]to[a-z][a-z]\n!readsql\n!select\n!insert\n!delete\n!execute \n\n\nFor further help:\nSlack: Tinson Wang\nDiscord: Tinson#7360\nEmail: tinson@uoguelph.ca", icon_emoji=":question:", username="Available Commands")
-
-                # Direct DM
-                # send_welcome_message(f'@{user_id}', user_id)
-                if text == "!tasktest":
-                    self.send_welcome_message(channel_id, user_id)
-
-                if match("![a-zA-Z][a-zA-Z]to[a-zA-Z][a-zA-Z]", text):
-                    # self.client.chat_postMessage(channel=channel_id, text="Regex pattern found!")
-                    translate_message(self, channel_id, text)
-
                 if search("!readsql", text):
                     self.cursor.execute("SELECT * FROM Courses")
                     for x in self.cursor:
@@ -192,10 +143,6 @@ class TinsonBot(slack.WebClient):
                         db.rollback()
 
 
-
-
-
-
         # Handler for reaction added event
         @self.slack_event_adapter.on("reaction_added")
         def reaction(payload):
@@ -221,9 +168,133 @@ class TinsonBot(slack.WebClient):
         def error_handler(err):
              print("ERROR: " + str(err))
 
+        # Route for /help
+        @self.server.route('/help', methods=['POST'])
+        async def return_help():
+            data = request.form
+            user_id = data.get('user_id')
+            user_name = data.get('user_name')
+            channel_id = data.get('channel_id')
+
+            help_response = {
+                'channel': channel_id,
+                'username': "Available Commands",
+                'icon_emoji': ":question:",
+                'blocks': [
+                    {
+                        'type': "section",
+                        'text': {
+                            'type': 'mrkdwn',
+                            'text': (
+                                "/help \n"
+                                "/weather \n"
+                                "/joke \n"
+                                "/translate \n"
+                                "!readsql \n"
+                                "!select \n"
+                                "!insert \n"
+                                "!delete \n"
+                                "!execute \n"
+                            )
+                        }
+                    },
+                    {
+                        'type': "divider"
+                    },
+                    {
+                        'type': "section",
+                        'text': {
+                            'type': 'mrkdwn',
+                            'text': (
+                                "*For further help:* \n"
+                                "Slack: Tinson Wang\n"
+                                "Discord: Tinson#7360\n"
+                                "Email: tinson@uoguelph.ca\n"
+                            )
+                        }
+                    }
+                ]
+            }
+
+            self.client.chat_postMessage(**help_response)
+            await(asyncio.sleep(1))
+            return Response(), 200
+
+        # Route for /weather
+        @self.server.route('/weather', methods=['POST'])
+        async def return_weather():
+            data = request.form
+            user_id = data.get('user_id')
+            user_name = data.get('user_name')
+            channel_id = data.get('channel_id')
+            text = data.get('text')
+            list = text.split(" ")
+            city = list[0]
+            state = list[1]
+
+            try:
+                location_url = "http://api.openweathermap.org/geo/1.0/direct?q=%s,%s&limit=1&appid=%s" % (city, state, os.environ['WEATHER_TOKEN'])
+                location_response = requests.get(location_url)
+                location_data = json.loads(location_response.text)
+                lat = location_data[0]['lat']
+                lon = location_data[0]['lon']
+                weather_url = "https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&appid=%s&units=metric" % (lat, lon, os.environ['WEATHER_TOKEN'])
+                weather_response = requests.get(weather_url)
+                data = json.loads(weather_response.text)
+                weather_data = data['main']
+                weather_current = data['weather'][0]['main']
+                weather_current_desc = data['weather'][0]['description']
+                weather_temperature = weather_data['temp']
+                weather_feels_like = weather_data['feels_like']
+                weather_humidity = weather_data['humidity']
+                new_line = '\n'
+                weather_message = f'Weather Report for: {city}, {state}{new_line}Currently: {weather_current} -- {weather_current_desc} {new_line} Temperature: {weather_temperature}°C {new_line} Feels Like: {weather_feels_like}°C {new_line} Humidity: {weather_humidity}% {new_line} {new_line} Data provided by OpenWeather API'
+                self.client.chat_postMessage(channel=channel_id, text=f'{weather_message}', icon_emoji=":sunny:", username="Weather Report")
+                await asyncio.sleep(1)
+                return Response(), 200
+            except:
+                self.client.chat_postMessage(channel=channel_id, text=f'Could not find weather data for: "{city}", "{state}"', icon_emoji=":sunny:", username="Weather Report")
+                await asyncio.sleep(1)
+                return Response(), 404
+
+        # Route for /joke
+        @self.server.route('/joke', methods=['POST'])
+        async def return_joke():
+            data = request.form
+            user_id = data.get('user_id')
+            user_name = data.get('user_name')
+            channel_id = data.get('channel_id')
+
+            random_int = 1
+            while random_int % 2 == 1:
+                random_int = random.randint(0, 286)
+
+            joke = self.bad_jokes[random_int]
+            answer = self.bad_jokes[random_int+1]
+
+            self.client.chat_postMessage(channel=channel_id, text=f'{joke}', icon_emoji = ":thinking_face:", username="Question")
+            await asyncio.sleep(1)
+
+            self.client.chat_postMessage(channel=channel_id, text=f'{answer}', icon_emoji = ":joy:", username="Answer")
+            await asyncio.sleep(1)
+
+            return Response(), 200
+
+        # Route for /translate
+        @self.server.route('/translate', methods=['POST'])
+        async def translate():
+            data = request.form
+            user_id = data.get('user_id')
+            user_name = data.get('user_name')
+            channel_id = data.get('channel_id')
+            text = data.get('text')
+            translate_message_slash(self, channel_id, text)
+            await asyncio.sleep(1)
+            return Response(), 200
+
         # Route for /message-count
         @self.server.route('/message-count', methods=['POST'])
-        def message_count():
+        async def message_count():
             data = request.form
             user_id = data.get('user_id')
             user_name = data.get('user_name')
@@ -233,6 +304,18 @@ class TinsonBot(slack.WebClient):
             message_count = self.message_counts.get(user_id, 0)
 
             self.client.chat_postMessage(channel=channel_id, text=f"Hi {user_name}, your message count is: {message_count}")
+            await asyncio.sleep(1)
+            return Response(), 200
+
+        # Route for /task
+        @self.server.route('/task', methods=['POST'])
+        async def task():
+            data = request.form
+            user_id = data.get('user_id')
+            user_name = data.get('user_name')
+            channel_id = data.get('channel_id')
+            self.send_welcome_message(channel_id, user_id)
+            await asyncio.sleep(1)
             return Response(), 200
 
         # Start bot

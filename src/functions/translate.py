@@ -25,4 +25,27 @@ def translate_message(bot, channel, text):
     else:
         message_translated = bot.translator.translate(message, lang_tgt=dest)
         translated_message = '[' + src + ' -> ' + dest + ']:\n' + message_translated
-        bot.chat_postMessage(channel=channel, text=translated_message)
+        bot.chat_postMessage(channel=channel, text=translated_message, icon_emoji=":earth_americas:", username="Translation")
+
+def translate_message_slash(bot, channel, text):
+    # Extracts the 'destination code' from the command
+    list = text.split(" ", 2)
+    src = list[0]
+    dest = list[1]
+    message = list[2]
+
+    if dest == 'chs':
+        dest = 'zh-cn'
+
+    if dest == 'cht':
+        dest = 'zh-tw'
+
+    if dest == 'jp':
+        dest = 'ja'
+
+    if dest not in LANGUAGES:
+        bot.chat_postMessage(channel=channel, text="Invalid language code - try again?")
+    else:
+        message_translated = bot.translator.translate(message, lang_tgt=dest)
+        translated_message = '[' + src + ' -> ' + dest + ']:\n' + message_translated
+        bot.chat_postMessage(channel=channel, text=translated_message, icon_emoji=":earth_americas:", username="Translation")
