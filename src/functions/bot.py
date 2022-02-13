@@ -292,6 +292,11 @@ class TinsonBot(slack.WebClient):
             await asyncio.sleep(1)
             return Response(), 200
 
+        # Route for /faq
+        @self.server.route('/faq', methods=['POST'])
+        async def faq():
+            await asyncio.sleep(1)
+
         # Route for /message-count
         @self.server.route('/message-count', methods=['POST'])
         async def message_count():

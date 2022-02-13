@@ -73,3 +73,9 @@ February 11
 > Added some async-await logic to account for synchronous issues
 > Customized /translate command
 > /weather command is now interactive -- user can specify location via city, state
+
+February 13
+> Created a simple skeleton for /faq
+> Some review on xkcd's bucket bot
+> Set up a new SQL database and table for faq engine
+> Set up columns for new table to be 'less rigid', as per the feedback from the demo
