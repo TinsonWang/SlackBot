@@ -20,6 +20,8 @@ import mysql.connector
 from .task import *
 from .translate import *
 
+from irc import server
+
 
 class TinsonBot(slack.WebClient):
     def __init__ (self, prefix, *args, **kwargs, ):
@@ -31,12 +33,14 @@ class TinsonBot(slack.WebClient):
         self.welcome_messages = {}
         self.translator = google_translator()
 
-        # Set up environment
-        env_path = Path('./src') / '.env'
-        dotenv.load_dotenv(dotenv_path=env_path)
+        # # Set up environment
+        # env_path = Path('./src') / '.env'
+        # dotenv.load_dotenv(dotenv_path=env_path)
+        dotenv.load_dotenv(dotenv_path=r"C:\Users\tinso\Desktop\CIS4900\src\.env")
 
         # Referenced from: https://github.com/wesbos/dad-jokes
-        self.bad_jokes_fp = open(Path('./src') / "badjokes.txt")
+        # self.bad_jokes_fp = open(Path('./src') / "badjokes.txt", "r")
+        self.bad_jokes_fp = open(r"C:\Users\tinso\Desktop\CIS4900\src\badjokes.txt", "r")
         self.bad_jokes = self.bad_jokes_fp.readlines()
 
         # Load in keys
@@ -64,7 +68,6 @@ class TinsonBot(slack.WebClient):
         )
 
         self.cursor = db.cursor()
-
 
         # Handler for message sent event (When a message is sent, call this function)
         @self.slack_event_adapter.on("message")
@@ -256,6 +259,73 @@ class TinsonBot(slack.WebClient):
                 self.client.chat_postMessage(channel=channel_id, text=f'Could not find weather data for: "{city}", "{state}"', icon_emoji=":sunny:", username="Weather Report")
                 await asyncio.sleep(1)
                 return Response(), 404
+
+        # Route for /bucket-start
+        @self.server.route('/bucket-start', methods=['POST'])
+        def bucket_start():
+            data = request.form
+            user_id = data.get('user_id')
+            user_name = data.get('user_name')
+            channel_id = data.get('channel_id')
+
+            server.main()
+
+            return Response(), 200
+
+        # Route for /bucket-send
+        @self.server.route('/bucket-send', methods=['POST'])
+        def bucket_test():
+            data = request.form
+            user_id = data.get('user_id')
+            user_name = data.get('user_name')
+            channel_id = data.get('channel_id')
+            text = data.get('text')
+
+            import sys
+            import itertools
+            import irc.client
+
+            target = 'SLACK_BOT'
+            "The nick or channel to which to send messages"
+
+            # target='SLACK_BOT'
+            # args = get_args()
+            # jaraco.logging.setup(args)
+            # target = args.target
+            target = 'tinson'
+            server='127.0.0.1'
+            port=6667
+            nickname='SLACK_BOT'
+
+            reactor = irc.client.Reactor()
+            try:
+                c = reactor.server().connect(server, port, nickname)
+                c.privmsg(target, "This is a test")
+                c.privmsg('bucketClone', "This is a test")
+                c.privmsg('bucket', "This is a test")
+
+
+                # self.client.chat_postMessage(channel=channel_id, text=f'{json.dumps(c.get_nickname())}')
+                # self.client.chat_postMessage(channel=channel_id, text=f'{json.dumps(c.get_server_name())}')
+                # self.client.chat_postMessage(channel=channel_id, text=f'{json.dumps(c.lusers(server))}')
+
+                # c.disconnect("Command finished. Returning...")
+
+
+                # c.send_items()
+
+
+            except irc.client.ServerConnectionError:
+                print(sys.exc_info()[1])
+                raise SystemExit(1)
+
+            # c.add_global_handler("welcome", on_connect)
+            # c.add_global_handler("join", on_join)
+            # c.add_global_handler("disconnect", on_disconnect)
+
+            reactor.process_forever()
+
+            return Response(), 200
 
         # Route for /joke
         @self.server.route('/joke', methods=['POST'])
