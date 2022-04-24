@@ -21,7 +21,7 @@ from .translate import *
 from irc import server
 
 
-class TinsonBot(slack.WebClient):
+class SlackBot(slack.WebClient):
     def __init__ (self, prefix, *args, **kwargs, ):
         super().__init__(*args, **kwargs)
         self.prefix = prefix
@@ -34,11 +34,11 @@ class TinsonBot(slack.WebClient):
         # # Set up environment
         # env_path = Path('./src') / '.env'
         # dotenv.load_dotenv(dotenv_path=env_path)
-        dotenv.load_dotenv(dotenv_path=r"C:\Users\tinso\Desktop\CIS4900\src\.env")
+        dotenv.load_dotenv(dotenv_path=r"***.env")
 
         # Referenced from: https://github.com/wesbos/dad-jokes
         # self.bad_jokes_fp = open(Path('./src') / "badjokes.txt", "r")
-        self.bad_jokes_fp = open(r"C:\Users\tinso\Desktop\CIS4900\src\badjokes.txt", "r")
+        self.bad_jokes_fp = open(r"***\badjokes.txt", "r")
         self.bad_jokes = self.bad_jokes_fp.readlines()
 
         # Load in keys
@@ -207,9 +207,9 @@ class TinsonBot(slack.WebClient):
                             'type': 'mrkdwn',
                             'text': (
                                 "*For further help:* \n"
-                                "Slack: Tinson Wang\n"
-                                "Discord: Tinson#7360\n"
-                                "Email: tinson@uoguelph.ca\n"
+                                "Slack: *** ****\n"
+                                "Discord: ***#****\n"
+                                "Email: ***@****\n"
                             )
                         }
                     }
@@ -289,7 +289,7 @@ class TinsonBot(slack.WebClient):
             # args = get_args()
             # jaraco.logging.setup(args)
             # target = args.target
-            target = 'tinson'
+            target = '***'
             server='127.0.0.1'
             port=6667
             nickname='SLACK_BOT'
@@ -550,7 +550,7 @@ class TinsonBot(slack.WebClient):
             return Response(), 200
 
         # Start bot
-        # self.client.chat_postMessage(channel="#general", text="TinsonBot reporting for duty!")
+        # self.client.chat_postMessage(channel="#general", text="SlackBot reporting for duty!")
         self.server.run()
 
 
