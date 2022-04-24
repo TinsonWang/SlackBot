@@ -79,3 +79,19 @@ February 13
 > Some review on xkcd's bucket bot
 > Set up a new SQL database and table for faq engine
 > Set up columns for new table to be 'less rigid', as per the feedback from the demo
+
+February 22
+> Attempted to set up xkcd bucket bot (https://github.com/zigdon/xkcd-Bucket/wiki/Making-your-own-bucket)
+> Set up local IRC server using UnrealIRCd
+> Connected to local IRC server using FooIRC, unsuccessful
+> Connected to local IRC server AdiIRC, Successful
+> Ran into a road block with installing perl modules, more specifically: https://rt.cpan.org/Public/Bug/Display.html?id=133627
+> Uninstalled Strawberry Perl
+> Installed ActiveState Perl
+> Ran into an issue with installing perl modules, asking for Cygwin
+> Installed Cygwin
+> Ran into an issue with installing perl modules
+> Attempted to set up VM for a POSIX compliant system, ran into issue of not having a boot disk for VM?
+
+February -> March -> April
+> Since the last time this file was updated, we've redefined the project in various ways. Unfortunately, I've fallen behind with keeping this journal updated.

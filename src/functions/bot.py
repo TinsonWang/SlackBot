@@ -1,6 +1,4 @@
-from fnmatch import translate
 from time import sleep
-from operator import contains
 import random
 import logging
 import asyncio
@@ -103,6 +101,7 @@ class TinsonBot(slack.WebClient):
                     selection = selection.upper()
                     # self.client.chat_postMessage(channel=channel_id, text=f"USER REQUESTING QUERY FOR: {selection}")
                     successful_input = False
+                    print(selection)
                     self.cursor.execute(f"SELECT * FROM Courses WHERE courseID = '{selection}'")
                     for x in self.cursor:
                         self.client.chat_postMessage(channel=channel_id, text=f"{x}")
@@ -189,15 +188,13 @@ class TinsonBot(slack.WebClient):
                         'text': {
                             'type': 'mrkdwn',
                             'text': (
-                                "/help \n"
-                                "/weather \n"
-                                "/joke \n"
-                                "/translate \n"
-                                "!readsql \n"
-                                "!select \n"
-                                "!insert \n"
-                                "!delete \n"
-                                "!execute \n"
+                                "FORMAT\n"
+                                "/command [parameters]                              || Description \n----------------------------------------------------------------------\n\n"
+                                "/help                                                              || Describes all available commands\n"
+                                "/weather [city] [state]                                  || Gets the weather at the specified location.\n"
+                                "/joke                                                              || Returns a joke and answer pair.\n"
+                                "/translate [2-letters] [2-letters] [message] || Translates from former to latter language.\n"
+                                "/faq [forget][factoid string][?]                     || Removes/Adds/Returns factoid"
                             )
                         }
                     },
@@ -362,11 +359,6 @@ class TinsonBot(slack.WebClient):
             await asyncio.sleep(1)
             return Response(), 200
 
-        # Route for /faq
-        @self.server.route('/faq', methods=['POST'])
-        async def faq():
-            await asyncio.sleep(1)
-
         # Route for /message-count
         @self.server.route('/message-count', methods=['POST'])
         async def message_count():
@@ -391,6 +383,170 @@ class TinsonBot(slack.WebClient):
             channel_id = data.get('channel_id')
             self.send_welcome_message(channel_id, user_id)
             await asyncio.sleep(1)
+            return Response(), 200
+
+        # Route for /stats-uptime
+        @self.server.route('/stats-uptime', methods=['POST'])
+        async def stats_uptime():
+            data = request.form
+            user_id = data.get('user_id')
+            user_name = data.get('user_name')
+            channel_id = data.get('channel_id')
+            myQuery = {
+                'answer':'polo'
+            }
+            response = requests.get("http://192.168.2.97:5000/stats/uptime", data=myQuery)
+            parsed = response.json()
+            self.client.chat_postMessage(channel=channel_id, text=f"Reading from response object: {parsed['response']}")
+            await asyncio.sleep(1)
+            return Response(), 200
+
+        # Route for /add-factoid
+        @self.server.route('/add-factoid', methods=['POST'])
+        async def add_factoid():
+            data = request.form
+            user_id = data.get('user_id')
+            user_name = data.get('user_name')
+            channel_id = data.get('channel_id')
+            text = data.get('text')
+            list = text.split(" ")
+            print(list)
+            keyword = ''.join(list[:1])
+            factoid = ' '.join(list[1:])
+            myQuery = {
+                'keyword': keyword,
+                'factoid': factoid
+            }
+            response = requests.post("http://192.168.2.97:5000/factoid/add-factoid", data=myQuery)
+            parsed = response.json()
+            if not parsed['success']:
+                self.client.chat_postMessage(channel=channel_id, text=f"Could not add factoid for key: {keyword}")
+            # self.client.chat_postMessage(channel=channel_id, text=f"Reading from response object: {parsed['response']}")
+            # self.client.chat_postMessage(channel=channel_id, text=f"Your keyword: {keyword}")
+            # self.client.chat_postMessage(channel=channel_id, text=f"Your factoid: {factoid}")
+            await asyncio.sleep(1)
+            return Response(), 200
+
+        # Route for /return-factoid
+        @self.server.route('/return-factoid', methods=['POST'])
+        async def return_factoid():
+            data = request.form
+            user_id = data.get('user_id')
+            user_name = data.get('user_name')
+            channel_id = data.get('channel_id')
+            text = data.get('text')
+            list = text.split(" ")
+            # print(list)
+            keyword = ''.join(list[:1])
+            print(keyword)
+            myQuery = {
+                'keyword': keyword
+            }
+            response = requests.get("http://192.168.2.97:5000/factoid/return-factoid", data=myQuery)
+            parsed = response.json()
+            # self.client.chat_postMessage(channel=channel_id, text=f"Reading from response object: {parsed['response']}")
+            # self.client.chat_postMessage(channel=channel_id, text=f"Your keyword: {keyword}")
+            value = ''.join(parsed['value'])
+            self.client.chat_postMessage(channel=channel_id, text=f"{value}")
+            await asyncio.sleep(1)
+            return Response(), 200
+
+        ### WORK ON THIS NEXT
+        @self.server.route('/faq', methods=['POST'])
+        async def faq():
+            data = request.form
+            user_name = data.get('user_name')
+            channel_id = data.get('channel_id')
+            text = data.get('text')
+            list = text.split(" ")
+
+            random_positive = random.randint(0,9)
+            random_negative = random.randint(0,4)
+
+            if list[0] == "forget":
+                keyword = list[1]
+                myQuery = {
+                    'keyword': keyword
+                }
+                response = requests.delete("http://192.168.2.97:5000/factoid/remove-factoid", data=myQuery)
+                parsed = response.json()
+                if parsed['success'] == True:
+                    affirmatives_remove = [
+                        f"Okay {user_name}, I've forgotten about '{keyword}'.",
+                        f"'{keyword}'? What's that again?",
+                        f"Alright {user_name}, I'll forget about '{keyword}'."
+
+                    ]
+                    random_positive = random.randint(0,2)
+                    self.client.chat_postMessage(channel=channel_id, text=affirmatives_remove[random_positive])
+                else:
+                    negatives_remove = [
+                        f"Sorry {user_name}, something went wrong when I tried to forget about '{keyword}'.",
+                        f"I ran into an error while trying to forget about '{keyword}', {user_name}.",
+                        f"I tried but couldn't forget about '{keyword}', {user_name}.",
+                        f"'{keyword}'? I ran into an issue when I tried to forget that, {user_name}?",
+                        f"Something went wrong when I tried to get about '{keyword}', {user_name}."
+                    ]
+                    self.client.chat_postMessage(channel=channel_id, text=negatives_remove[random_negative])
+            else:
+                # if there is a question mark at the end of the string return a factoid, else add a factoid
+                if search("\?$", text):
+
+                    # extract keyword from string
+                    last_word = list[-1]
+                    keyword = last_word[:-1]
+                    myQuery = {
+                        'keyword': keyword
+                    }
+                    response = requests.get("http://192.168.2.97:5000/factoid/return-factoid", data=myQuery)
+                    parsed = response.json()
+                    if parsed['query_status']:
+                        value = ''.join(parsed['value'])
+                        self.client.chat_postMessage(channel=channel_id, text=f"{keyword} {value}")
+                    else:
+                        negatives_return = [
+                            f"Sorry {user_name}, there was nothing in my memory about '{keyword}'.",
+                            f"I'm not sure I know anything about '{keyword}', {user_name}.",
+                            f"I have no idea about '{keyword}', {user_name}.",
+                            f"'{keyword}'? What's that, {user_name}?",
+                            f"I don't know what '{keyword}' is, {user_name}."
+                        ]
+                        self.client.chat_postMessage(channel=channel_id, text=negatives_return[random_negative])
+                    await asyncio.sleep(1)
+                else:
+                    keyword = ''.join(list[:1])
+                    factoid = ' '.join(list[1:])
+                    myQuery = {
+                        'keyword': keyword,
+                        'factoid': factoid
+                    }
+                    response = requests.post("http://192.168.2.97:5000/factoid/add-factoid", data=myQuery)
+                    parsed = response.json()
+                    if not parsed['success']:
+                        negatives_add = [
+                            f"I couldn't remember that about '{keyword}', {user_name}.",
+                            f"Something went wrong when I tried to remember '{keyword}', {user_name}!",
+                            f"I ran into an error when I tried adding '{keyword}' to my knowledge base, {user_name}.",
+                            f"There might already be a value for '{keyword}', {user_name}.",
+                            f"Unable to remember '{keyword}', maybe try something else {user_name}?"
+                        ]
+                        self.client.chat_postMessage(channel=channel_id, text=negatives_add[random_negative])
+                    else:
+                        affirmatives_add = [
+                            f"Alright {user_name}, I'll remember '{keyword}'.",
+                            f"Got it, {user_name}.",
+                            f"Thanks for teaching me about '{keyword}', {user_name}!",
+                            f"Roger that, Captain {user_name}.",
+                            f"Heard you loud and clear, {user_name}.",
+                            f"Okay {user_name}, I'll keep '{keyword}' in mind.",
+                            f"Understood, {user_name}.",
+                            f"That's interesting, {user_name}! Adding '{keyword}' to my memory.",
+                            f"I'm going to remember '{keyword}', just for you {user_name}!",
+                            f"Thank you for adding to my knowledge base, {user_name}. I feel smarter already!",
+                        ]
+                        self.client.chat_postMessage(channel=channel_id, text=affirmatives_add[random_positive])
+                    await asyncio.sleep(1)
+
             return Response(), 200
 
         # Start bot
