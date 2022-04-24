@@ -3,4 +3,4 @@ from functions.bot import *
 from irc import *
 
 # Initialize Slack client
-client = TinsonBot('!')
+client = SlackBot('!')
