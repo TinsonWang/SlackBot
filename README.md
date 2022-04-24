@@ -2,7 +2,8 @@
 
 Proposed Work
 ---
-At a high-level, this independent study will create a Slack app for Gryph Slack that behaves like a bucket bot. The Slack app will be interactive and respond to certain commands or prompts given by users. To start, the project will involve eliciting the users of Gryph Slack for use cases and aim to implement the given use cases. One goal is to be able to build a knowledge base and answer questions using that knowledge base (ex. a FAQ engine). Additionally, the Slack app will include functionality from the following list: 
+At a high-level, this independent study will create a Slack app for Gryph Slack that behaves like Bucket, one of the bots in xkcd’s IRC channel which is capable of storing and retrieving factoids. The Slack app will be interactive and respond to certain commands or prompts given by users. The main goal is to be able to build a dynamic knowledge base and answer questions using that knowledge base (ex. a FAQ engine). Additionally, I want to attempt to implement some the below-listed functionality into the Slack app: 
+
 -	Casual levels of conversation (jokes, facts, weather information)
 -	Simple text adventure
 -	Filter and replace select words to create unusual or funny scenarios
@@ -20,7 +21,14 @@ Personal Learning Outcomes
 
 Milestones
 ---
-- Milestone 1 (Learning Outcome 1): A demonstration and code review of the webhooks and REST APIs used to date. This milestone will focus on examining and evaluating how the student incorporated RESTful services and webhooks into the bot.  
-- Milestone 2 (Learning Outcome 2): Provide a report that evaluates and describes the different kind of user experience design techniques that were used. This milestone will focus on comparing and reflecting the different techniques the student tried and how those worked for their project.
-- Milestone 3 (Learning Outcome 3): Demonstrate the capabilities of the most effective technique for parsing user input. The demonstration should include some quantitative measure (performance times, accuracy, user satisfaction, precision, recall) to identify which technique is most effective. 
-- Milestone 4: Final report, includes student reflections and full documentation of the bot.
+- Milestone 1: Creating my own RESTful API. 
+
+In doing so, I will be able to gain experience designing endpoints, rehearsing proper documentation practices, and effectively laying the groundwork for how my Slack app will be making requests.
+
+- Milestone 2: Mid-Project reflection. 
+
+This document aims to provide an opportunity for self-reflection. Through this reflection, I want to make clear the approaches I've taken, the things I've learned, and the things I still want to achieve.  
+
+- Milestone 3: Video Demonstration. 
+
+The video demo should showcase the final version of the project, highlighting the experience of a user interacting with the Slack app. 
